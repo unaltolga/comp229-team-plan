@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>COMP229 Team Plan</title>
+<meta name="description" content="Who does what, and when, for Part 1 of our COMP229 cat booking project.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Tokens ---------- */
+  :root {
+    --paper: #eef1f5;
+    --card: #ffffff;
+    --ink: #1b2a41;
+    --muted: #56657b;
+    --line: #d3dae5;
+    --amber: #e3a008;
+    --amber-ink: #3b2a00;
+    --teal: #1f7a6b;
+    --past: #9aa6b6;
+    --code-bg: #e4e9f0;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #121a27;
+      --card: #1b2638;
+      --ink: #e8edf4;
+      --muted: #a3b0c2;
+      --line: #2c3a52;
+      --amber: #f0b429;
+      --amber-ink: #2a1d00;
+      --teal: #4fc1a9;
+      --past: #5d6b80;
+      --code-bg: #0e1520;
+      color-scheme: dark;
+    }
+  }
+
+  /* ---------- Base ---------- */
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 400 1.0625rem/1.6 "Atkinson Hyperlegible", system-ui, sans-serif;
+  }
+  .wrap { max-width: 46rem; margin: 0 auto; padding: 0 1rem 4rem; }
+  h1, h2, h3 { font-family: "Bricolage Grotesque", system-ui, sans-serif; line-height: 1.15; margin: 0; }
+  h1 { font-weight: 800; font-size: clamp(2rem, 6vw, 3.1rem); letter-spacing: -0.02em; }
+  h2 { font-weight: 800; font-size: 1.6rem; letter-spacing: -0.01em; margin-bottom: 0.75rem; }
+  h3 { font-weight: 600; font-size: 1.15rem; margin: 1.25rem 0 0.5rem; }
+  p { margin: 0 0 0.75rem; }
+  a { color: inherit; text-underline-offset: 3px; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.9em; background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 4px; overflow-wrap: anywhere; }
+  pre { background: var(--code-bg); padding: 0.9rem 1rem; border-radius: 8px; overflow-x: auto; font-size: 0.9rem; line-height: 1.5; }
+  pre code { background: none; padding: 0; }
+  :focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+  section { margin-top: 3rem; }
+
+  /* ---------- Header ---------- */
+  header { padding-top: 2.5rem; }
+  .lede { font-size: 1.2rem; margin-top: 0.9rem; max-width: 36rem; }
+  .clock { display: inline-block; margin-top: 0.25rem; padding: 0.35rem 0.75rem; border-radius: 999px; background: var(--card); border: 1px solid var(--line); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* ---------- Name picker ---------- */
+  .names { display: grid; grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr)); gap: 0.5rem; margin-bottom: 1.25rem; }
+  .name-btn {
+    appearance: none; text-align: left; cursor: pointer;
+    background: var(--card); color: var(--ink);
+    border: 2px solid var(--line); border-radius: 10px;
+    padding: 0.6rem 0.75rem; font: inherit;
+  }
+  .name-btn strong { display: block; font-family: "Bricolage Grotesque", system-ui, sans-serif; font-size: 1.2rem; }
+  .name-btn span { display: block; font-size: 0.85rem; color: var(--muted); line-height: 1.35; }
+  .name-btn[aria-pressed="true"] { border-color: var(--amber); background: var(--amber); color: var(--amber-ink); }
+  .name-btn[aria-pressed="true"] span { color: var(--amber-ink); }
+
+  /* ---------- The ticket (the one bold element) ---------- */
+  .ticket {
+    position: relative;
+    display: grid; grid-template-columns: 6.5rem 1fr;
+    background: var(--card); border-radius: 14px;
+    box-shadow: 0 1px 0 var(--line), 0 12px 30px -18px rgba(27, 42, 65, 0.45);
+  }
+  .ticket[hidden] { display: none; }
+  .stub {
+    background: var(--amber); color: var(--amber-ink);
+    border-radius: 14px 0 0 14px;
+    border-right: 2px dashed var(--paper);
+    display: flex; align-items: center; justify-content: center;
+    padding: 1rem 0;
+  }
+  .stub b {
+    writing-mode: vertical-rl; transform: rotate(180deg);
+    font-family: "Bricolage Grotesque", system-ui, sans-serif; font-weight: 800;
+    font-size: 2.4rem; letter-spacing: 0.02em;
+  }
+  /* notches where the stub tears off */
+  .ticket::before, .ticket::after {
+    content: ""; position: absolute; left: calc(6.5rem - 10px);
+    width: 20px; height: 20px; border-radius: 50%; background: var(--paper);
+  }
+  .ticket::before { top: -10px; }
+  .ticket::after { bottom: -10px; }
+  .ticket-body { padding: 1.25rem 1.25rem 1rem 1.5rem; min-width: 0; }
+  .ticket-body h3 { margin-top: 0; }
+  .steps { list-style: none; margin: 0.75rem 0 0; padding: 0; counter-reset: step; }
+  .steps li {
+    counter-increment: step;
+    display: grid; grid-template-columns: 2rem 6.2rem 1fr; gap: 0.5rem;
+    padding: 0.6rem 0; border-top: 1px solid var(--line);
+  }
+  .steps li::before { content: counter(step); font-weight: 700; color: var(--muted); }
+  .steps .when { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .steps .what { min-width: 0; }
+  .steps li.is-past { color: var(--past); }
+  .steps li.is-past .what { text-decoration: line-through; text-decoration-color: var(--past); }
+  .steps li.is-next .when { color: var(--teal); }
+  .pick-hint { color: var(--muted); }
+
+  /* ---------- Vote ---------- */
+  .ballot { list-style: none; margin: 0 0 1rem; padding: 0; }
+  .ballot li {
+    display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 0.75rem;
+    padding: 0.65rem 0; border-top: 1px solid var(--line);
+  }
+  .ballot .opt { min-width: 0; }
+  .ballot .opt strong { display: block; font-family: "Bricolage Grotesque", system-ui, sans-serif; font-size: 1.15rem; }
+  .bar { display: block; height: 6px; margin-top: 0.35rem; border-radius: 3px; background: var(--teal); width: 0; transition: width 0.4s ease; }
+  .count { font-weight: 700; font-variant-numeric: tabular-nums; min-width: 3.2rem; text-align: right; }
+  .vote-link { font-size: 0.95rem; }
+  .actions { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+  .button {
+    appearance: none; cursor: pointer; display: inline-block; text-decoration: none;
+    font: 700 1rem/1 "Atkinson Hyperlegible", system-ui, sans-serif;
+    padding: 0.75rem 1rem; border-radius: 10px;
+    background: var(--ink); color: var(--paper); border: 2px solid var(--ink);
+  }
+  .button.secondary { background: transparent; color: var(--ink); }
+  .note { color: var(--muted); font-size: 0.95rem; }
+
+  /* ---------- Timeline ---------- */
+  .timeline { list-style: none; margin: 0; padding: 0; }
+  .timeline li { display: grid; grid-template-columns: 6.8rem 1fr; gap: 0.75rem; padding: 0.5rem 0; border-top: 1px solid var(--line); }
+  .timeline .when { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .timeline li.is-past { color: var(--past); }
+  .timeline li.is-next .when { color: var(--teal); }
+  .timeline li.is-call .what::before { content: "Call: "; font-weight: 700; }
+
+  /* ---------- Tables and lists ---------- */
+  table { width: 100%; border-collapse: collapse; font-size: 0.98rem; }
+  th, td { text-align: left; vertical-align: top; padding: 0.55rem 0.5rem 0.55rem 0; border-top: 1px solid var(--line); }
+  th { font-weight: 700; }
+  td:first-child { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .check { padding-left: 1.2rem; }
+  .check li { margin-bottom: 0.35rem; }
+  ol.howto { padding-left: 1.3rem; }
+  ol.howto li { margin-bottom: 0.4rem; }
+
+  footer { margin-top: 3.5rem; padding-top: 1rem; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.92rem; }
+
+  /* ---------- Small screens ---------- */
+  @media (max-width: 34rem) {
+    .ticket { grid-template-columns: 1fr; }
+    .stub { border-radius: 14px 14px 0 0; border-right: 0; border-bottom: 2px dashed var(--paper); padding: 0.6rem 1.25rem; justify-content: flex-start; }
+    .stub b { writing-mode: horizontal-tb; transform: none; font-size: 1.8rem; }
+    .ticket::before, .ticket::after { display: none; }
+    .ticket-body { padding: 1rem; }
+    .steps li { grid-template-columns: 1.6rem 1fr; }
+    .steps .what { grid-column: 2; }
+    .timeline li { grid-template-columns: 1fr; gap: 0; }
+    td:first-child { white-space: normal; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bar { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header: the deadline and our submit time -->
+  <header>
+    <h1>Part 1 plan for our cat booking team</h1>
+    <p class="lede">Part 1 is due Saturday, November 14 at 6:36 pm. We submit at 5:00 pm so nothing is late (late work loses 20%).</p>
+    <p class="clock" id="clock" aria-live="polite">Loading time left</p>
+  </header>
+
+  <!-- Personal steps: pick a name, see your own list -->
+  <section id="you" aria-labelledby="you-title">
+    <h2 id="you-title">Pick your name</h2>
+    <div class="names" id="names" role="group" aria-label="Team members"></div>
+    <p class="pick-hint" id="pick-hint">Tap your name to see your steps. Times are Toronto time.</p>
+    <article class="ticket" id="ticket" hidden>
+      <div class="stub"><b id="ticket-name"></b></div>
+      <div class="ticket-body">
+        <h3 id="ticket-title">Your steps</h3>
+        <ol class="steps" id="steps"></ol>
+      </div>
+    </article>
+  </section>
+
+  <!-- Team name vote, counted from GitHub reactions -->
+  <section id="vote" aria-labelledby="vote-title">
+    <h2 id="vote-title">Vote for the team name</h2>
+    <p>Open the vote on GitHub, sign in, and press 👍 under one name. Voting closes Friday at 7:30 pm, then Tolga makes the logo.</p>
+    <ol class="ballot" id="ballot"></ol>
+    <div class="actions">
+      <a class="button" href="https://github.com/unaltolga/comp229-team-plan/issues/1">Open the vote on GitHub</a>
+      <button class="button secondary" id="refresh" type="button">Refresh results</button>
+    </div>
+    <p class="note" id="vote-status"></p>
+  </section>
+
+  <!-- Shared timeline -->
+  <section id="timeline" aria-labelledby="timeline-title">
+    <h2 id="timeline-title">Calls and deadlines</h2>
+    <p>Calls follow the meeting poll: Juan is free Friday 4 to 6 pm only, Yuhan Friday 5:30 to 6 pm and Saturday from 4 pm, Gyubin Saturday 10 am to 5 pm.</p>
+    <h3>Friday, November 13</h3>
+    <ol class="timeline">
+      <li class="is-call" data-at="2026-11-13T16:00:00-05:00"><span class="when">4:00 pm</span><span class="what">Juan, Tolga, Yosuke. Confirm tasks; Yosuke starts the Render deploy</span></li>
+      <li data-at="2026-11-13T17:00:00-05:00"><span class="when">5:00 pm</span><span class="what">Live URL posted; repo visible to the professor (Yosuke)</span></li>
+      <li class="is-call" data-at="2026-11-13T17:30:00-05:00"><span class="when">5:30 pm</span><span class="what">Juan, Tolga, Yuhan. Slides and file headers</span></li>
+      <li data-at="2026-11-13T18:00:00-05:00"><span class="when">6:00 pm</span><span class="what">Contract draft shared and README PR open (Juan)</span></li>
+      <li data-at="2026-11-13T19:30:00-05:00"><span class="when">7:30 pm</span><span class="what">Team name vote closes</span></li>
+      <li data-at="2026-11-13T20:00:00-05:00"><span class="when">8:00 pm</span><span class="what">Everyone posts full name, student ID, email, role and a real photo in the group chat</span></li>
+      <li data-at="2026-11-13T21:00:00-05:00"><span class="when">9:00 pm</span><span class="what">Logo PDF shared (Tolga)</span></li>
+      <li data-at="2026-11-13T22:00:00-05:00"><span class="when">10:00 pm</span><span class="what">Public endpoint PR open (Tolga)</span></li>
+    </ol>
+    <h3>Saturday, November 14</h3>
+    <ol class="timeline">
+      <li data-at="2026-11-14T10:00:00-05:00"><span class="when">10:00 am</span><span class="what">Everyone has signed the contract; slides ready (Yuhan)</span></li>
+      <li data-at="2026-11-14T11:00:00-05:00"><span class="when">11:00 am</span><span class="what">Contract PDF with logo final; Postman PR open (Gyubin)</span></li>
+      <li data-at="2026-11-14T11:30:00-05:00"><span class="when">11:30 am</span><span class="what">Yosuke merges the endpoint, README and Postman PRs. Code freeze for the demo</span></li>
+      <li class="is-call" data-at="2026-11-14T11:45:00-05:00"><span class="when">11:45 am</span><span class="what">Gyubin, Yosuke. Record the video (until 1:00 pm)</span></li>
+      <li data-at="2026-11-14T14:30:00-05:00"><span class="when">2:30 pm</span><span class="what">Video on YouTube as unlisted, link in chat (Gyubin)</span></li>
+      <li data-at="2026-11-14T15:30:00-05:00"><span class="when">3:30 pm</span><span class="what">Jira updated, backlog PDF exported (Tolga)</span></li>
+      <li class="is-call" data-at="2026-11-14T16:00:00-05:00"><span class="when">4:00 pm</span><span class="what">Gyubin, Tolga, Yosuke, Yuhan. Final check of every item</span></li>
+      <li data-at="2026-11-14T16:15:00-05:00"><span class="when">4:15 pm</span><span class="what">File header PR merged (Yuhan, Yosuke)</span></li>
+      <li data-at="2026-11-14T16:30:00-05:00"><span class="when">4:30 pm</span><span class="what">Project zip ready (Tolga)</span></li>
+      <li data-at="2026-11-14T17:00:00-05:00"><span class="when">5:00 pm</span><span class="what">Submitted on Luminate</span></li>
+      <li data-at="2026-11-14T18:36:00-05:00"><span class="when">6:36 pm</span><span class="what">Hard deadline</span></li>
+    </ol>
+  </section>
+
+  <!-- Pull request how-to: everyone needs one commit -->
+  <section id="pr" aria-labelledby="pr-title">
+    <h2 id="pr-title">How to open your pull request</h2>
+    <p>The GitHub mark (10 points) needs a commit from every member, so each of us has one small PR. Commit with your own GitHub account so it counts for you, and never commit <code>.env</code>.</p>
+    <pre><code>git clone https://github.com/Yosuke-cell/COMP229_Booking_System_Application.git
+cd COMP229_Booking_System_Application
+git checkout -b your-branch-name
+# make your change
+git add .
+git commit -m "Describe the change in a few words"
+git push -u origin your-branch-name</code></pre>
+    <ol class="howto">
+      <li>On GitHub, open the repo and press <strong>Compare &amp; pull request</strong>.</li>
+      <li>Base is <code>main</code>. Add Yosuke-cell as reviewer, then <strong>Create pull request</strong>.</li>
+      <li>Post the PR link in the chat.</li>
+    </ol>
+    <table>
+      <thead><tr><th>Branch</th><th>Who</th><th>Change</th></tr></thead>
+      <tbody>
+        <tr><td><code>feature/public-availability</code></td><td>Tolga</td><td><code>GET /api/bookings/public</code> without a token: cat name, start, end and status of upcoming bookings, no user data</td></tr>
+        <tr><td><code>docs/readme-update</code></td><td>Juan</td><td>Team section, live URL, the new endpoint in the endpoint table</td></tr>
+        <tr><td><code>test/postman-public</code></td><td>Gyubin</td><td>Request for the public endpoint and a <code>baseUrl</code> variable for the live URL</td></tr>
+        <tr><td><code>docs/file-headers</code></td><td>Yuhan</td><td>Header comment on every file under <code>server/</code>; pull <code>main</code> first, merged last</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Video run order -->
+  <section id="video" aria-labelledby="video-title">
+    <h2 id="video-title">Video run order, 5 minutes max</h2>
+    <p>Record in one take on Zoom or Teams so no editing is needed. Open the live URL first to wake Render, zoom the code font, and check the mic.</p>
+    <table>
+      <thead><tr><th>Time</th><th>What</th><th>Who</th></tr></thead>
+      <tbody>
+        <tr><td>0:00 to 0:30</td><td>Slide 1: team name, logo, full names and student IDs, COMP229 Web Application Development, project type. Slide 2: photos with name and role</td><td>Gyubin</td></tr>
+        <tr><td>0:30 to 1:45</td><td>Code: folders (config, model, controller, router), JWT sign-in and token check, booking rules (date check, double booking 409, soft delete)</td><td>Yosuke</td></tr>
+        <tr><td>1:45 to 4:30</td><td>Postman on the live URL, all 12 endpoints: sign up, sign in, get and update user, list users as admin, create, list, get, update and cancel booking, public availability without a token, delete user</td><td>Gyubin</td></tr>
+        <tr><td>4:30 to 5:00</td><td>What comes in Part 2: React frontend, booking history, public page</td><td>Yosuke</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Submission checklist -->
+  <section id="submit" aria-labelledby="submit-title">
+    <h2 id="submit-title">What we submit on Luminate</h2>
+    <h3>Part A, team contract (5%)</h3>
+    <ul class="check">
+      <li>Signed team contract (PDF)</li>
+      <li>Team logo (PDF)</li>
+    </ul>
+    <h3>Part B, first backend release (10%)</h3>
+    <ul class="check">
+      <li>Zip of the project files, without <code>node_modules</code> and <code>.env</code></li>
+      <li>GitHub repository link, checked in a private window so the professor can open it</li>
+      <li>Live backend link on Render (a missing link costs 10%)</li>
+      <li>YouTube link to the video</li>
+      <li>Product backlog snapshot (PDF from the Jira Backlog view)</li>
+    </ul>
+    <p class="note">Still open: does one member submit for the team, and are Peer Review 1 and Weekly Report 1 due with Part 1? Ask in the chat if you know.</p>
+  </section>
+
+  <footer>
+    <p>This page is temporary and public, so it holds no student IDs, emails or photos. Post those in the group chat. Last updated Friday, November 13, 3:30 pm.</p>
+  </footer>
+</div>
+
+<script>
+  /* ---------- Data: each member's steps ---------- */
+  const MEMBERS = [
+    {
+      id: "tolga", name: "Tolga", summary: "Name vote, logo, endpoint PR, Jira, zip and submit",
+      steps: [
+        ["2026-11-13T16:00:00-05:00", "Fri 4:00 pm", "Call with Juan and Yosuke. Share this page and start the name vote."],
+        ["2026-11-13T17:30:00-05:00", "Fri 5:30 pm", "Call with Juan and Yuhan."],
+        ["2026-11-13T19:30:00-05:00", "Fri 7:30 pm", "Close the vote and post the winning name in the chat."],
+        ["2026-11-13T20:00:00-05:00", "Fri 8:00 pm", "Post your full name, student ID, email, role and photo in the chat."],
+        ["2026-11-13T21:00:00-05:00", "Fri 9:00 pm", "Share the team logo as a PDF."],
+        ["2026-11-13T22:00:00-05:00", "Fri 10:00 pm", "Open your PR <code>feature/public-availability</code> for <code>GET /api/bookings/public</code>."],
+        ["2026-11-14T10:00:00-05:00", "Sat 10:00 am", "Sign the contract."],
+        ["2026-11-14T15:30:00-05:00", "Sat 3:30 pm", "Update Jira (move finished cards to Done, assign the rest) and export the backlog PDF from the Backlog view."],
+        ["2026-11-14T16:00:00-05:00", "Sat 4:00 pm", "Final check call."],
+        ["2026-11-14T16:30:00-05:00", "Sat 4:30 pm", "Make the project zip from <code>main</code>, without <code>node_modules</code> and <code>.env</code>."],
+        ["2026-11-14T17:00:00-05:00", "Sat 5:00 pm", "Submit on Luminate if one member submits for the team."]
+      ]
+    },
+    {
+      id: "yosuke", name: "Yosuke", summary: "Repo access, Render deploy, merges, code walkthrough",
+      steps: [
+        ["2026-11-13T16:00:00-05:00", "Fri 4:00 pm", "Call with Juan and Tolga. Vote on the team name."],
+        ["2026-11-13T17:00:00-05:00", "Fri 5:00 pm", "Make the repo visible to the professor: change it to public, or invite the professor as a collaborator."],
+        ["2026-11-13T17:00:00-05:00", "Fri 5:00 pm", "Deploy on Render: New, Web Service, connect the repo. Root directory <code>server</code>, build <code>npm install</code>, start <code>npm start</code>, environment <code>ATLASDB</code> and <code>SECRETKEY</code>. Atlas Network Access must allow <code>0.0.0.0/0</code>. Post the live URL. Latest Sat 11:30 am."],
+        ["2026-11-13T20:00:00-05:00", "Fri 8:00 pm", "Post your full name, student ID, email, role and photo in the chat."],
+        ["2026-11-14T10:00:00-05:00", "Sat 10:00 am", "Sign the contract."],
+        ["2026-11-14T11:30:00-05:00", "Sat 11:30 am", "Create an admin demo user: sign up normally, then set <code>admin: true</code> on it in Atlas. Merge the PRs from Tolga, Juan and Gyubin, then check the live URL after Render redeploys."],
+        ["2026-11-14T11:45:00-05:00", "Sat 11:45 am", "Record with Gyubin: the code walkthrough (0:30 to 1:45) and the Part 2 wrap-up (4:30 to 5:00)."],
+        ["2026-11-14T16:00:00-05:00", "Sat 4:00 pm", "Final check call. Merge Yuhan's header PR by 4:15 pm."]
+      ]
+    },
+    {
+      id: "gyubin", name: "Gyubin", summary: "Signatures, Postman PR, slides and demo in the video, upload",
+      steps: [
+        ["2026-11-13T19:30:00-05:00", "Fri evening", "Read this page and vote on the team name on GitHub before 7:30 pm."],
+        ["2026-11-13T20:00:00-05:00", "Fri 8:00 pm", "Post your full name, student ID, email, role and photo in the chat."],
+        ["2026-11-14T10:00:00-05:00", "Sat 10:00 am", "Make sure all five members signed the contract. If the slides are not in the chat yet, finish them."],
+        ["2026-11-14T11:00:00-05:00", "Sat 11:00 am", "Export the contract PDF with the logo. Open your PR <code>test/postman-public</code>."],
+        ["2026-11-14T11:45:00-05:00", "Sat 11:45 am", "Record with Yosuke: present the two slides (0:00 to 0:30) and run the Postman demo on the live URL (1:45 to 4:30)."],
+        ["2026-11-14T14:30:00-05:00", "Sat 2:30 pm", "Upload the video to YouTube as unlisted and post the link."],
+        ["2026-11-14T16:00:00-05:00", "Sat 4:00 pm", "Final check call."]
+      ]
+    },
+    {
+      id: "yuhan", name: "Yuhan", summary: "Google Slides, file header PR",
+      steps: [
+        ["2026-11-13T17:30:00-05:00", "Fri 5:30 pm", "Call with Juan and Tolga. Vote on the team name before 7:30 pm."],
+        ["2026-11-13T20:00:00-05:00", "Fri 8:00 pm", "Post your full name, student ID, email, role and photo in the chat."],
+        ["2026-11-14T10:00:00-05:00", "Sat 10:00 am", "Two Google Slides, link in the chat. Slide 1: team name, logo, full names and student IDs, COMP229 Web Application Development, project: Cat Booking System. Slide 2: a real photo of each member with full name and role below it."],
+        ["2026-11-14T10:00:00-05:00", "Sat 10:00 am", "Sign the contract (Friday night is fine)."],
+        ["2026-11-14T16:00:00-05:00", "Sat 4:00 pm", "Final check call."],
+        ["2026-11-14T16:15:00-05:00", "Sat 4:15 pm", "Open your PR <code>docs/file-headers</code> (Friday night is better): pull <code>main</code>, then add a header to every file under <code>server/</code> with all five student IDs, the app name and what the file does."]
+      ]
+    },
+    {
+      id: "juan", name: "Juan", summary: "Contract draft, README PR",
+      steps: [
+        ["2026-11-13T16:00:00-05:00", "Fri 4:00 pm", "Call with Tolga and Yosuke. Vote on the team name."],
+        ["2026-11-13T17:30:00-05:00", "Fri 5:30 pm", "Call with Tolga and Yuhan."],
+        ["2026-11-13T18:00:00-05:00", "Fri 6:00 pm", "Fill the contract template from Luminate in a shared Google Doc: meeting times, expectations, consequences, and how a member fixes a problem. Share the link in the chat."],
+        ["2026-11-13T18:00:00-05:00", "Fri 6:00 pm", "Open your PR <code>docs/readme-update</code>: team section, live URL, the new public endpoint in the endpoint table."],
+        ["2026-11-13T20:00:00-05:00", "Fri 8:00 pm", "Post your full name, student ID, email, role and photo in the chat."],
+        ["2026-11-14T10:00:00-05:00", "Sat 10:00 am", "Sign the contract. Sign Friday night if you are away on Saturday."]
+      ]
+    }
+  ];
+
+  /* ---------- Time helpers: mark past and next items ---------- */
+  function markTimeline(items) {
+    const now = Date.now();
+    let nextFound = false;
+    items.forEach(function (el) {
+      const at = Date.parse(el.dataset.at);
+      el.classList.remove("is-past", "is-next");
+      if (at < now) {
+        el.classList.add("is-past");
+      } else if (!nextFound) {
+        el.classList.add("is-next");
+        nextFound = true;
+      }
+    });
+  }
+
+  function updateClock() {
+    const clock = document.getElementById("clock");
+    const submitAt = Date.parse("2026-11-14T17:00:00-05:00");
+    const deadline = Date.parse("2026-11-14T18:36:00-05:00");
+    const now = Date.now();
+    if (now < submitAt) {
+      const mins = Math.floor((submitAt - now) / 60000);
+      const h = Math.floor(mins / 60);
+      const m = mins % 60;
+      clock.textContent = h + " h " + m + " min left until we submit (Sat 5:00 pm)";
+    } else if (now < deadline) {
+      clock.textContent = "Submit now: the hard deadline is 6:36 pm";
+    } else {
+      clock.textContent = "The Part 1 deadline has passed";
+    }
+    markTimeline(document.querySelectorAll(".timeline li"));
+    markTimeline(document.querySelectorAll("#steps li"));
+  }
+
+  /* ---------- Name picker and personal ticket ---------- */
+  function showMember(id) {
+    const member = MEMBERS.find(function (m) { return m.id === id; });
+    document.querySelectorAll(".name-btn").forEach(function (btn) {
+      btn.setAttribute("aria-pressed", String(btn.dataset.id === id));
+    });
+    const ticket = document.getElementById("ticket");
+    if (!member) { ticket.hidden = true; return; }
+    document.getElementById("ticket-name").textContent = member.name;
+    document.getElementById("ticket-title").textContent = member.name + ", your steps";
+    const list = document.getElementById("steps");
+    list.innerHTML = "";
+    member.steps.forEach(function (step) {
+      const li = document.createElement("li");
+      li.dataset.at = step[0];
+      li.innerHTML = '<span class="when"></span><span class="what"></span>';
+      li.querySelector(".when").textContent = step[1];
+      li.querySelector(".what").innerHTML = step[2];
+      list.appendChild(li);
+    });
+    ticket.hidden = false;
+    document.getElementById("pick-hint").textContent = "Send someone their own list with this page's link plus #" + member.id + ".";
+    markTimeline(list.querySelectorAll("li"));
+    try { localStorage.setItem("member", member.id); } catch (e) { /* storage blocked: fine */ }
+  }
+
+  function buildNames() {
+    const box = document.getElementById("names");
+    MEMBERS.forEach(function (m) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "name-btn";
+      btn.dataset.id = m.id;
+      btn.setAttribute("aria-pressed", "false");
+      btn.innerHTML = "<strong></strong><span></span>";
+      btn.querySelector("strong").textContent = m.name;
+      btn.querySelector("span").textContent = m.summary;
+      btn.addEventListener("click", function () {
+        history.replaceState(null, "", "#" + m.id);
+        showMember(m.id);
+      });
+      box.appendChild(btn);
+    });
+    let start = location.hash.replace("#", "");
+    if (!MEMBERS.some(function (m) { return m.id === start; })) {
+      try { start = localStorage.getItem("member") || ""; } catch (e) { start = ""; }
+    }
+    if (start) showMember(start);
+  }
+
+  /* ---------- Vote: read thumbs-up counts from the GitHub issue ---------- */
+  const VOTE_API = "https://api.github.com/repos/unaltolga/comp229-team-plan/issues/1/comments?per_page=100";
+  const FALLBACK = ["Purrfect Stack", "Paw Commit", "Nine Lives Dev", "Catalyst", "Code Whiskers"];
+
+  function renderBallot(options, statusText) {
+    const ballot = document.getElementById("ballot");
+    ballot.innerHTML = "";
+    const max = Math.max(1, ...options.map(function (o) { return o.votes || 0; }));
+    options.forEach(function (o) {
+      const li = document.createElement("li");
+      li.innerHTML = '<span class="opt"><strong></strong><span class="bar"></span></span><span class="count"></span><a class="vote-link">Vote</a>';
+      li.querySelector("strong").textContent = o.name;
+      li.querySelector(".count").textContent = o.votes === null ? "" : o.votes + (o.votes === 1 ? " vote" : " votes");
+      li.querySelector(".bar").style.width = o.votes ? (o.votes / max * 100) + "%" : "0";
+      const link = li.querySelector(".vote-link");
+      link.href = o.url;
+      link.setAttribute("aria-label", "Vote for " + o.name + " on GitHub");
+      ballot.appendChild(li);
+    });
+    document.getElementById("vote-status").textContent = statusText;
+  }
+
+  function loadVotes() {
+    const status = document.getElementById("vote-status");
+    status.textContent = "Loading results from GitHub";
+    fetch(VOTE_API, { headers: { "Accept": "application/vnd.github+json" } })
+      .then(function (res) {
+        if (!res.ok) throw new Error("GitHub answered " + res.status);
+        return res.json();
+      })
+      .then(function (comments) {
+        const options = comments.map(function (c) {
+          return {
+            name: (c.body || "").split("\n")[0].trim().slice(0, 40) || "(empty comment)",
+            votes: (c.reactions && c.reactions["+1"]) || 0,
+            url: c.html_url
+          };
+        });
+        options.sort(function (a, b) { return b.votes - a.votes; });
+        const time = new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+        renderBallot(options, "Results as of " + time + ". Each 👍 on GitHub is one vote; please vote for one name only.");
+      })
+      .catch(function () {
+        renderBallot(FALLBACK.map(function (n) {
+          return { name: n, votes: null, url: "https://github.com/unaltolga/comp229-team-plan/issues/1" };
+        }), "GitHub did not return the results just now. You can still vote on GitHub; press Refresh in a minute.");
+      });
+  }
+
+  /* ---------- Start ---------- */
+  buildNames();
+  updateClock();
+  setInterval(updateClock, 30000);
+  loadVotes();
+  document.getElementById("refresh").addEventListener("click", loadVotes);
+  window.addEventListener("hashchange", function () {
+    const id = location.hash.replace("#", "");
+    if (MEMBERS.some(function (m) { return m.id === id; })) showMember(id);
+  });
+</script>
+</body>
+</html>
