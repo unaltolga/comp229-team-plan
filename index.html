@@ -267,7 +267,7 @@
   <!-- Team name vote, counted from GitHub reactions -->
   <section id="vote" aria-labelledby="vote-title">
     <h2 id="vote-title">Vote for the team name</h2>
-    <p>Open the vote on GitHub, sign in, and press 👍 under one name. Voting closes Friday at 7:30 pm, then Tolga makes the logo.</p>
+    <p>To vote, press <strong>Open on GitHub</strong> next to a name, sign in, then press the smiley icon on that comment and choose 👍 (if a 👍 is already there, press it). Opening the link alone does not count. One name each; voting closes Friday at 7:30 pm, then Tolga makes the logo.</p>
     <ol class="ballot" id="ballot"></ol>
     <div class="actions">
       <a class="button" href="https://github.com/unaltolga/comp229-team-plan/issues/1">Open the vote on GitHub</a>
@@ -279,7 +279,7 @@
   <!-- Meeting time vote, counted from GitHub reactions -->
   <section id="meeting" aria-labelledby="meeting-title">
     <h2 id="meeting-title">Pick the meeting time</h2>
-    <p>We meet once, on Saturday, as a WhatsApp group call for the final check before we submit. The proposed time is 4:00 pm: in the poll it is the only slot where Gyubin, Tolga, Yosuke and Yuhan are all free (Juan is not free on Saturday). Press 👍 under every time that works for you by Friday 8:00 pm.</p>
+    <p>We meet once, on Saturday, as a WhatsApp group call for the final check before we submit. The proposed time is 4:00 pm: in the poll it is the only slot where Gyubin, Tolga, Yosuke and Yuhan are all free (Juan is not free on Saturday). Vote the same way as for the name: open every time that works for you on GitHub and add 👍, by Friday 8:00 pm.</p>
     <ol class="ballot" id="ballot-time"></ol>
     <div class="actions">
       <a class="button" href="https://github.com/unaltolga/comp229-team-plan/issues/2">Open the time vote on GitHub</a>
@@ -458,7 +458,7 @@ git push -u origin your-branch-name</code></pre>
   </section>
 
   <footer>
-    <p>This page is temporary and public, so it holds no student IDs, emails or photos. Post those in the group chat. Last updated Friday, November 13, 3:27 pm.</p>
+    <p>This page is temporary and public, so it holds no student IDs, emails or photos. Post those in the group chat. Last updated Friday, November 13, 3:32 pm.</p>
   </footer>
 </div>
 
@@ -659,13 +659,13 @@ git push -u origin your-branch-name</code></pre>
     const max = Math.max(1, ...options.map(function (o) { return o.votes || 0; }));
     options.forEach(function (o) {
       const li = document.createElement("li");
-      li.innerHTML = '<span class="opt"><strong></strong><span class="bar"></span></span><span class="count"></span><a class="vote-link">Vote</a>';
+      li.innerHTML = '<span class="opt"><strong></strong><span class="bar"></span></span><span class="count"></span><a class="vote-link">Open on GitHub</a>';
       li.querySelector("strong").textContent = o.name;
       li.querySelector(".count").textContent = o.votes === null ? "" : o.votes + (o.votes === 1 ? " vote" : " votes");
       li.querySelector(".bar").style.width = o.votes ? (o.votes / max * 100) + "%" : "0";
       const link = li.querySelector(".vote-link");
       link.href = o.url;
-      link.setAttribute("aria-label", "Vote for " + o.name + " on GitHub");
+      link.setAttribute("aria-label", "Open " + o.name + " on GitHub to vote");
       ballot.appendChild(li);
     });
     document.getElementById(vote.status).textContent = statusText;
